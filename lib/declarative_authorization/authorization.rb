@@ -164,7 +164,7 @@ module Authorization
       # Example: permit!( :edit, :object => user.posts )
       #
       if Authorization.is_a_association_proxy?(options[:object]) && options[:object].respond_to?(:new)
-        options[:object] = (Rails.version < "3.0" ? options[:object] : options[:object].scoped).new
+        options[:object] = (Rails.version < "3.0" ? options[:object] : options[:object].where(nil)).new
       end
       
       options[:context] ||= options[:object] && (
@@ -189,11 +189,11 @@ module Authorization
 
       if options[:bang]
         if rules.empty?
-          raise NotAuthorized, "No matching rules found for #{privilege} for #{user.inspect} " +
+          raise NotAuthorized, "No matching rules found for #{privilege} for User with id #{user.id} " +
             "(roles #{roles.inspect}, privileges #{privileges.inspect}, " +
             "context #{options[:context].inspect})."
         else
-          raise AttributeAuthorizationError, "#{privilege} not allowed for #{user.inspect} on #{(options[:object] || options[:context]).inspect}."
+          raise AttributeAuthorizationError, "#{privilege} not allowed for User with id #{user.id} on #{(options[:object] || options[:context]).inspect}."
         end
       else
         false
@@ -258,7 +258,7 @@ module Authorization
     # Returns the role symbols of the given user.
     def roles_for (user)
       user ||= Authorization.current_user
-      raise AuthorizationUsageError, "User object doesn't respond to roles (#{user.inspect})" \
+      raise AuthorizationUsageError, "User object doesn't respond to roles (#{user.id})" \
         if !user.respond_to?(:role_symbols) and !user.respond_to?(:roles)
 
       Rails.logger.info("The use of user.roles is deprecated.  Please add a method " +
@@ -326,7 +326,7 @@ module Authorization
       user = options[:user] || Authorization.current_user
       privileges = privilege.is_a?(Array) ? privilege : [privilege]
       
-      raise AuthorizationUsageError, "No user object given (#{user.inspect}) or " +
+      raise AuthorizationUsageError, "No user object given for user id (#{user.id}) or " +
         "set through Authorization.current_user" unless user
 
       roles = options[:user_roles] || flatten_roles(roles_for(user))
@@ -512,6 +512,15 @@ module Authorization
       object ||= attr_validator.object
       return false unless object
       
+      if ( Authorization.is_a_association_proxy?(object) &&
+           object.respond_to?(:empty?) )
+        return false if object.empty?
+        object.each do |member|
+          return true if validate?(attr_validator, member, hash)
+        end
+        return false
+      end
+            
       (hash || @conditions_hash).all? do |attr, value|
         attr_value = object_attribute_value(object, attr)
         if value.is_a?(Hash)
