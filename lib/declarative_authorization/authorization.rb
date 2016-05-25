@@ -448,7 +448,7 @@ module Authorization
     def matches?(roles, privs, context = nil)
       roles = [roles] unless roles.is_a?(Array)
       @contexts.include?(context) and roles.include?(@role) and 
-        not(@privileges & privs).empty?
+        not (@privileges & privs).empty?
     end
 
     def validate?(attr_validator, skip_attribute = false)
