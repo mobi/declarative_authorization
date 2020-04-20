@@ -45,7 +45,7 @@ module Authorization
   class ObligationScope < ActiveRecord::Relation
     def initialize(model, options)
       @finder_options = {}
-	   super(model, model.table_name, model.predicate_builder)
+	    super(model, table: model.table_name, predicate_builder: model.predicate_builder)
     end
 
     def scope
