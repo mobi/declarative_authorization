@@ -4,8 +4,7 @@ on:
   pull_request:
 
 jobs:
-    runs-on: centos8-org-mobi-stage-runner
-
+    runs-on: [self-hosted, "centos8"] 
     env:
       DEPLOY_BRANCH : ${{github.ref_name}}
     steps:
