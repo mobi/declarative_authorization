@@ -1,10 +1,9 @@
 name: Trivy Test Run
 
 on:
-  pull_request:
   workflow_dispatch:
     inputs:
-      deploy_branch:
+      DEPLOY_BRANCH:
         description: 'Branch to scan (e.g., main, develop)'
         required: true
 
