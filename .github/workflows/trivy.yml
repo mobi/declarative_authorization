@@ -2,8 +2,14 @@ name: Trivy Test Run
 
 on:
   pull_request:
+  workflow_dispatch:
+    inputs:
+      deploy_branch:
+        description: 'Branch to scan (e.g., main, develop)'
+        required: true
 
 jobs:
+  scan:
     runs-on: [self-hosted, "centos8"] 
     env:
       DEPLOY_BRANCH : ${{github.ref_name}}
