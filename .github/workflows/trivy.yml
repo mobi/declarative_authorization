@@ -4,7 +4,8 @@ on:
   pull_request:
 
 jobs:
-    runs-on: ubuntu-latest
+    runs-on: centos8-org-mobi-stage-runner
+
     env:
       DEPLOY_BRANCH : ${{github.ref_name}}
     steps:
