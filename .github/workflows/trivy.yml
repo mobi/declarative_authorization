@@ -16,8 +16,11 @@ jobs:
       DEPLOY_BRANCH : ${{github.ref_name}}
     outputs:
       git_branch: ${{ env.GIT_BRANCH }}
-      
+
     steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        
       - name: Run Trivy Security Scan
         uses: ./.github/actions/trivy_security_scan
 
