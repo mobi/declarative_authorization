@@ -266,7 +266,18 @@ runs:
         else
           echo "❌ Failed to create license CSV file"
         fi
-
+    - name: Upload Trivy CSV Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: trivy-security-report-${{ github.run_number }}
+        path: |
+          trivy-sbom-results.json
+          syft-sbom-cyclonedx.json
+          trivy-vulnerabilities-report.csv
+          trivy-license-report.csv
+          trivy-results.json
+          trivy-results-backup.json
+        retention-days: 30
     
 
     
